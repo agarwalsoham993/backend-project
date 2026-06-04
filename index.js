@@ -8,28 +8,15 @@ const http = require("http");   // ReferenceError: http is not defined
 // .writeHead is the function that writes the headers of the response to the client
 // .on is the function that listens for events on the request
 
-
+// in the postman add the header in the request as the authorization and then we can check the password and grant authorization accordingly
 const server = http.createServer((req, res) => {
     // Basic routing logic
-    if (req.url === '/') {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('Welcome to the Homepage!');
-    } else if (req.url === '/api') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.write('"message1": "this is message 1" \n');
-        res.write('"message2": "this is message 2" \n');
-        setTimeout(() => {
-            res.write('"message3" : "message 3 is after this time"');
-            res.end();
-        }, 2000)            // 2.01 s , 272 B
-
-    } else if (req.url === '/pages') {
-        res.writeHead(200, { "content-type": 'text/html' });
-        res.end('You are on pages');
-    } else {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('404 Not Found');
+    console.log(req.headers.authorization); // the headers are not case sensitive probably
+    if (req.headers.authorization === "passwordisthis") {
+        res.write('authorization granted');
+        res.end();
     }
+    else res.end('incorrect password');
 });
 
 // .listen is the function that starts the server
