@@ -10,11 +10,19 @@ const http = require("http");   // ReferenceError: http is not defined
 
 
 const server = http.createServer((req, res) => {
-    console.log("request for: ", req.url)                   // logs in my console
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.write('this is the body \n');
-    res.write('this is body 2');
-    res.end();
+
+    console.log("request for: ", req.url)                   // logs in my console
+    if (req.url === '/') {
+        res.write('main \n');
+    }
+    else if (req.url === '/pages') {
+        res.write('pages \n');
+    }
+    else if (req.url === '/about') {
+        res.write('about page')
+    }
+    res.end("response given");
 })
 
 // .listen is the function that starts the server
