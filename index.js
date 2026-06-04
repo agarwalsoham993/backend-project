@@ -1,4 +1,7 @@
 const http = require("http");   // ReferenceError: http is not defined
+const express = require("express");
+const app = express();
+const PORT = 3000;
 const { type } = require("os");
 
 // req is the request sent by the client
@@ -17,36 +20,24 @@ const authenticate = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
     if (authHeader === SECRET_PASSWORD) {
-        console.log("Auth passed, moving to next step...");
-        next(); // This is the trigger to continue to the main logic
+        console.log("Auth middleware passed");
+        next();
     } else {
         res.writeHead(401, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: "Unauthorized" }));
     }
 };
 
-const main_code = (req, res) => {
-    // 1. Use a standard Content-Type
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-
-    // 2. Stringify the object and use write()
-    const responseData = JSON.stringify({
-        message: "this is reaching main code",
-        status: "authentication successful"
-    });
-
-    // 3. Send the full payload in end() or write()
-    res.end(responseData);
-}
-
-const server = http.createServer((req, res) => {
-    authenticate(req, res, () => {
-        main_code(req, res);
-    });
+// Route: Secured
+app.get('/api', authenticate, (req, res) => {
+    // Express automatically sets Content-Type to application/json
+    res.json({ message: "Welcome to the secured area!" });
 });
 
-// .listen is the function that starts the server
-// .close is the function that stops the server
-// .emit is the function that emits an event on the request
+app.post('/api', authenticate, (req, res) => {
+    // Express automatically sets Content-Type to application/json
+    res.json({ message: "Secured area from any request" });
+});
 
-server.listen(3000, () => console.log("Server listening on port 3000"))
+// for any other request from ones defined here it will automatically handle the issue
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
